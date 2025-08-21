@@ -95,7 +95,8 @@ describe('JettonWallet', () => {
         jwallet_code = new Cell({ exotic:true, bits: lib_prep.bits, refs:lib_prep.refs});
 
         console.log('jetton minter code hash = ', minter_code.hash().toString('hex'));
-        console.log('jetton wallet code hash = ', jwallet_code.hash().toString('hex'));
+        console.log('jetton wallet library hash = ', jwallet_code.hash().toString('hex'));
+        console.log('jetton wallet code hash = ', jwallet_code_raw.hash().toString('hex'));
 
         jettonMinter   = blockchain.openContract(
                    JettonMinter.createFromConfig(
@@ -1454,7 +1455,7 @@ describe('JettonWallet', () => {
             const minterSmc = await blockchain.getContract(jettonMinter.address);
 
             // Sending message but only processing first step of tx chain
-            let res = minterSmc.receiveMessage(internal({
+            let res = await minterSmc.receiveMessage(internal({
                 from: deployer.address,
                 to: jettonMinter.address,
                 body: mintMsg,
@@ -1466,7 +1467,7 @@ describe('JettonWallet', () => {
             expect(outMsgSc.preloadUint(32)).toEqual(Op.internal_transfer);
             expect(await jettonMinter.getTotalSupply()).toEqual(supplyBefore + mintAmount);
 
-            minterSmc.receiveMessage(internal({
+            await minterSmc.receiveMessage(internal({
                 from: deployerJettonWallet.address,
                 to: jettonMinter.address,
                 bounced: true,
@@ -1486,7 +1487,7 @@ describe('JettonWallet', () => {
 
             const walletSmc = await blockchain.getContract(deployerJettonWallet.address);
 
-            const res = walletSmc.receiveMessage(internal({
+            const res = await walletSmc.receiveMessage(internal({
                 from: deployer.address,
                 to: deployerJettonWallet.address,
                 body: transferMsg,
@@ -1500,7 +1501,7 @@ describe('JettonWallet', () => {
 
             expect(await deployerJettonWallet.getJettonBalance()).toEqual(balanceBefore - txAmount);
 
-            walletSmc.receiveMessage(internal({
+            await walletSmc.receiveMessage(internal({
                 from: notDeployerJettonWallet.address,
                 to: walletSmc.address,
                 bounced: true,
@@ -1520,7 +1521,7 @@ describe('JettonWallet', () => {
 
             const walletSmc = await blockchain.getContract(deployerJettonWallet.address);
 
-            const res = walletSmc.receiveMessage(internal({
+            const res = await walletSmc.receiveMessage(internal({
                 from: deployer.address,
                 to: deployerJettonWallet.address,
                 body: burnMsg,
@@ -1534,7 +1535,7 @@ describe('JettonWallet', () => {
 
             expect(await deployerJettonWallet.getJettonBalance()).toEqual(balanceBefore - burnAmount);
 
-            walletSmc.receiveMessage(internal({
+            await walletSmc.receiveMessage(internal({
                 from: jettonMinter.address,
                 to: walletSmc.address,
                 bounced: true,
