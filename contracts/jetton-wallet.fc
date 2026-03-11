@@ -18,7 +18,7 @@
   storage#_ status:uint4
             balance:Coins owner_address:MsgAddressInt
             jetton_master_address:MsgAddressInt
-            merkle_root:uint256 = Storage;
+            merkle_root:uint256 salt:(## 10) = Storage;
 -}
 
 global int merkle_root;
