@@ -14,14 +14,14 @@ export async function run(provider: NetworkProvider) {
     const walletCode = (await minter.getJettonData()).walletCode;
 
     if(walletLib.equals(walletCode)) {
-        console.log("Minter wallet code is library and matches the current source")
+        console.log("Minter wallet code is a library and matches the current source")
         return 0;
     }
 
     const isLibrary = walletCode.isExotic && walletCode.bits.length == 256 + 8 && walletCode.bits.substring(0, 8).toString() == '02';
 
     if(isLibrary) {
-        console.log("Minter wallet code is not a library but doesn't match expected code cell");
+        console.log("Minter wallet code is a library but doesn't match expected code cell");
         console.log("Expected code hash:", expHash);
         console.log("Got:", walletCode.bits.substring(8, walletCode.bits.length - 8).toString().toLowerCase());
     } else {
